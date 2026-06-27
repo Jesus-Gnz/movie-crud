@@ -4,45 +4,43 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.taskmanager.prueba.Interfaz.MovieRepository;
 import com.taskmanager.prueba.Model.Movie;
 
 @Service
 public class MovieService {
-    private List<Movie> movies = new ArrayList<>();
-    private Long idCounter = 1L;
+    private final MovieRepository movieRepository;
+    public MovieService(MovieRepository movieRepository){
+        this.movieRepository = movieRepository;
+    }
 
     public Movie createMovie (Movie movie){
-        movie.setId(idCounter);
-        idCounter++;
-        movies.add(movie);
-        return movie;
+        return movieRepository.save(movie);
     }
     public Movie getMovieById (Long id){
-        for (Movie n : movies){
-            if (n.getId().equals(id)) {
-                return n;
-            }
-        }
-        return null;
-    }
-    public List<Movie> getAllMovies(){
-        return movies;
+        return movieRepository.findById(id).orElse(null);
     }
     public boolean deleteMovieById (Long id){
-        return movies.removeIf(n -> n.getId().equals(id));
+        if (movieRepository.existsById(id)) {
+            movieRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
     
     public Movie updatMovieById (Long id, Movie movie){
-        for(Movie n: movies){
-            if (n.getId().equals(id)) {
-                n.setName(movie.getName());;
-                n.setMinutes(movie.getMinutes());
-                n.setGenero(movie.getGenero());
-                n.setDirector(movie.getDirector());
-                n.setAnio(movie.getAnio());
-                return n;
+            Movie existingMovie = movieRepository.findById(id).orElse(null);
+            if (existingMovie != null) {
+                existingMovie.setName(movie.getName());
+                existingMovie.setMinutes(movie.getMinutes());
+                existingMovie.setAnio(movie.getAnio());
+                existingMovie.setDirector(movie.getDirector());
+                existingMovie.setGenero(movie.getGenero());
+                return movieRepository.save(existingMovie);
             }
-        }
         return null;
+    }
+    public List <Movie> getAllMovies(){
+        return movieRepository.findAll();
     }
 }

@@ -1,5 +1,10 @@
 package com.taskmanager.prueba.Model;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
+@Entity
 public class Movie {
 
     private String name;
@@ -7,6 +12,9 @@ public class Movie {
     private int anio;
     private String director;
     private String genero;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     public String getName() {
